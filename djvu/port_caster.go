@@ -134,7 +134,7 @@ func (c *PortCaster) PrefixToPorts(alias string) []Port
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest until one of them returns non-empty URL.
-func (c *PortCaster) IdToUrl(source Port, id string) URL
+func (c *PortCaster) IdToUrl(source Port, id string) Url
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
@@ -147,7 +147,7 @@ func (c *PortCaster) IdToFile(source Port, id string) *File
 // whose responsibility is to locate the source of the data based on the URL passed
 // and return it back in the form of the Pool.
 // If this particular receiver is unable to fullfil the request, it should return nil.
-func (c *PortCaster) RequestData(source Port, url URL) *sync.Pool
+func (c *PortCaster) RequestData(source Port, url *Url) *sync.Pool
 
 // This notification is sent when an error occurs
 // and the error message should be shown to the user.
