@@ -432,11 +432,13 @@ func (url *Url) storeCgiArgs() {
 
 // Escape special characters
 func encodeReserved(gs string) string {
+	// TODO: For now this should work, but you'd be better off basing code from encode_reserved
 	return url.PathEscape(gs)
 }
 
 // Decodes reserved characters from the URL
 func decodeReserved(urlString string) string {
+	// TODO: For now this should work, but you'd be better off basing code from decode_reserved
 	result, err := url.PathUnescape(urlString)
 	if err != nil {
 		// TODO: Return err instead of panicking
