@@ -2,9 +2,12 @@ package djvu
 
 import (
 	"errors"
+	"fmt"
+	"path"
 	"runtime"
 	"strings"
 	"sync"
+	"unicode"
 )
 
 // TODO: You might want to make Url an *interface*
@@ -201,6 +204,8 @@ func (url *Url) Extension() string {
 
 // Checks if this is an empty URL
 func (url *Url) IsEmpty() bool {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
 	return len(url.url) == 0
 }
 
@@ -220,9 +225,59 @@ func (url *Url) Raw() string {
 
 // Applies heuristic rules to convert a URl into a valid file name.
 // Returns a simple basename in case of failure.
-func (url *Url) Utf8Filename() string {
-	// Do things...
-	panic("unimplemented")
+//
+// TODO: Export logic to some helper function, then export this method, effectively calling that helper.
+func (url *Url) utf8Filename() string {
+	if url.url == "" {
+		return ""
+	}
+
+	retval := ""
+	uu := decodeReserved(url.url)
+
+	// Expect file URL to start with `file:` (filespec)
+	if !strings.HasPrefix(uu, filespec) {
+		return path.Base(uu)
+	}
+	uu = uu[len(filespec):]
+
+	if runtime.GOOS == osMac {
+		// Remove leading slashes
+		uu = strings.TrimLeft(uu, "/")
+		uu = strings.TrimPrefix(uu, localhost)
+		uu = strings.TrimLeft(uu, "/")
+	} else {
+		if strings.HasPrefix(uu, localhostspec1) {
+			uu = strings.TrimPrefix(uu, localhostspec1) // RFC 1738 local host form
+		} else if strings.HasPrefix(uu, localhostspec2) {
+			uu = strings.TrimPrefix(uu, localhostspec2) // RFC 1738 local host form
+		} else if len(uu) > 4 && //  "file://<letter>:/<path>"
+			uu[:2] == "//" && // "file://<letter>|/<path>"
+			unicode.IsLetter(rune(uu[2])) &&
+			(uu[3] == colon || uu[3] == vertical) && uu[4] == slash {
+			uu = uu[2:]
+		} else if len(uu) > 2 && // "file:/<path>"
+			uu[0] == slash && uu[1] != slash {
+			uu = uu[1:]
+		}
+	}
+
+	// Check if we are finished
+	if runtime.GOOS == osMac {
+		// TODO: Implement...
+		panic("unimplemented")
+	} else {
+		retval = expandName(uu, root)
+	}
+
+	if runtime.GOOS == osWindows || runtime.GOOS == osMac {
+		if unicode.IsLetter(rune(uu[0])) && uu[1] == vertical && uu[2] == slash {
+			drive := fmt.Sprintf("%v%v%v", uu[0], colon, backslash)
+			retval = expandName(uu[3:], drive)
+		}
+	}
+
+	return retval
 }
 
 // Returns a string representation of the URL.

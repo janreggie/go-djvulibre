@@ -16,6 +16,7 @@ const (
 	percent   = '%'
 	slash     = '/'
 	tilde     = '~'
+	vertical  = '|'
 
 	maxpathlen = 1024
 )
@@ -26,11 +27,11 @@ const (
 
 var root = func() string {
 	switch runtime.GOOS {
-	case "darwin":
+	case osMac:
 		return ""
-	case "linux":
+	case osLinux:
 		return "/"
-	case "windows":
+	case osWindows:
 		return "\\"
 	}
 	panic("define something here for your operating system")
