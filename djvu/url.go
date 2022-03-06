@@ -3,6 +3,7 @@ package djvu
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"path"
 	"runtime"
 	"strings"
@@ -431,12 +432,17 @@ func (url *Url) storeCgiArgs() {
 
 // Escape special characters
 func encodeReserved(gs string) string {
-	panic("unimplemented")
+	return url.PathEscape(gs)
 }
 
 // Decodes reserved characters from the URL
 func decodeReserved(urlString string) string {
-	panic("unimplemented")
+	result, err := url.PathUnescape(urlString)
+	if err != nil {
+		// TODO: Return err instead of panicking
+		panic(err)
+	}
+	return result
 }
 
 func beautifyPath(urlString string) string {
