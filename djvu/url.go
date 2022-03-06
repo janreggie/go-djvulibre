@@ -1,6 +1,16 @@
 package djvu
 
-import "sync"
+import (
+	"errors"
+	"runtime"
+	"strings"
+	"sync"
+)
+
+// TODO: You might want to make Url an *interface*
+// and `BaseUrl` a concrete struct
+// for `Filename` and some other child interfaces to "work".
+// But for now, let's stick to this.
 
 // Url is a System independent URL representation.
 //
@@ -29,7 +39,7 @@ type Url struct {
 	cgiNameArr  []string
 	cgiValueArr []string
 
-	valudUrl bool
+	validUrl bool
 }
 
 func NewUrl(urlString string) *Url {
@@ -37,79 +47,129 @@ func NewUrl(urlString string) *Url {
 	return nil
 }
 
-// Copy constructor
-func (url *Url) Copy() *Url
+// Copy copies a Url
+func (url *Url) Copy() *Url {
+	panic("unimplemented")
+}
 
 // IsValid checks if the URL is valid.
 // If invalid, reinitialize
-func (url *Url) IsValid() bool
+func (url *Url) IsValid() bool {
+	panic("unimplemented")
+}
 
 // Extracts the Protocol part from the URL and returns it
-func (url *Url) Protocol() string
+func (url *Url) Protocol() string {
+	panic("unimplemented")
+}
 
 // Returns string after the first `#`
 // with decoded escape sequences.
-func (url *Url) HashArgument() string
+func (url *Url) HashArgument() string {
+	panic("unimplemented")
+}
 
 // Inserts `arg` after a separating hash into the URL.
-func (url *Url) SetHashArgument(arg string)
+func (url *Url) SetHashArgument(arg string) {
+	panic("unimplemented")
+}
 
 // Returns the total number of CGI arguments in the URL.
-func (url *Url) CgiArguments() int
+func (url *Url) CgiArguments() int {
+	panic("unimplemented")
+}
 
 // Returs the total number of DjVu-related CGI arguments
 // (arguments following `DJVUOPTS` in the URL)
-func (url *Url) DjvuCgiArguments() int
+func (url *Url) DjvuCgiArguments() int {
+	panic("unimplemented")
+}
 
 // Returns that part of CGI argument `num`,
 // which is before the equal sign
-func (url *Url) CgiName(num int) string
+func (url *Url) CgiName(num int) string {
+	panic("unimplemented")
+}
 
 // Returns that part of DjVu-related CGI argument number `num`,
 // which is before the equal sign
-func (url *Url) DjvuCgiName(num int) string
+func (url *Url) DjvuCgiName(num int) string {
+	panic("unimplemented")
+}
 
 // Returns that part of CGI argument number `num`,
 // which is after the equal sign
-func (url *Url) CgiValue(num int) string
+func (url *Url) CgiValue(num int) string {
+	panic("unimplemented")
+}
 
 // Returns that part of DjVu-related CGI argument number `num`,
 // which is after the equal sign
-func (url *Url) DjvuCgiValue(num int) string
+func (url *Url) DjvuCgiValue(num int) string {
+	panic("unimplemented")
+}
 
 // Returns array of all known CGI names
 // (part of CGI argument before the equal sign)
-func (url *Url) CgiNames() []string
+func (url *Url) CgiNames() []string {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	retval := make([]string, len(url.cgiNameArr))
+	copy(retval, url.cgiNameArr)
+	return retval
+}
 
 // Returns array of all known DjVu-related CGI arguments
 // (arguments following `DJVUOPTS` option)
-func (url *Url) DjvuCgiNames() []string
+func (url *Url) DjvuCgiNames() []string {
+	panic("unimplemented")
+}
 
 // Returns array of all known CGI names
 // (part of CGI argument before the equal sign)
 // TODO: Documentation above may be misleading!!! Did you mean *after* equal sign?
-func (url *Url) CgiValues() []string
+func (url *Url) CgiValues() []string {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	retval := make([]string, len(url.cgiValueArr))
+	copy(retval, url.cgiValueArr)
+	return retval
+}
 
 // Returns array of values of DjVu-related CGI arguments
 // (arguments following `DJVUOPTS` option)
-func (url *Url) DjvuCgiValues() []string
+func (url *Url) DjvuCgiValues() []string {
+	panic("unimplemented")
+}
 
 // Erases everything after the first `#` or `?`
-func (url *Url) ClearAllArguments()
+func (url *Url) ClearAllArguments() {
+	panic("unimplemented")
+}
 
 // Erases everything after the first `#`
-func (url *Url) ClearHashArguments()
+func (url *Url) ClearHashArguments() {
+	panic("unimplemented")
+}
 
 // Erases DjVu CGI arguments (following `DJVUOPTS`)
-func (url *Url) ClearDjvuCgiArguments()
+func (url *Url) ClearDjvuCgiArguments() {
+	panic("unimplemented")
+}
 
 // Erases all CGI arguments (following the first `?`)
-func (url *Url) ClearCgiArguments()
+func (url *Url) ClearCgiArguments() {
+	panic("unimplemented")
+}
 
 // Appends the specified CGI argument.
 // Will insert `DJVUOPTS` if necessary.
 // TODO: Pointer necessary?
-func (url *Url) AddDjvuCgiArgument(name string, value *string)
+func (url *Url) AddDjvuCgiArgument(name string, value *string) {
+	panic("unimplemented")
+}
 
 // Returns the URL corresponding to the dictionary
 // containing the document with this URL.
@@ -130,13 +190,19 @@ func (url *Url) Name() string
 // For example, if the URL is `http://www.lizardtech.com/file%201.djvu`,
 // then this function will return `file 1.djvu`.
 // Contrast with Name which returns `file%201.djvu`.
-func (url *Url) Fname() string
+func (url *Url) Fname() string {
+	panic("unimplemented")
+}
 
 // Returns the extension part of name of document in this URL.
-func (url *Url) Extension() string
+func (url *Url) Extension() string {
+	panic("unimplemented")
+}
 
 // Checks if this is an empty URL
-func (url *Url) IsEmpty() bool
+func (url *Url) IsEmpty() bool {
+	return len(url.url) == 0
+}
 
 // Checks whether the URL is local (i.e., starts with `file:/`)
 func (url *Url) IsLocalFileUrl() bool
@@ -152,32 +218,57 @@ func (url *Url) Raw() string {
 	return url.url
 }
 
+// Applies heuristic rules to convert a URl into a valid file name.
+// Returns a simple basename in case of failure.
+func (url *Url) Utf8Filename() string {
+	// Do things...
+	panic("unimplemented")
+}
+
 // Returns a string representation of the URL.
 // This function normally returns a standard file URL as described in RFC 1738.
 // Some versions of MSIE do not support this standard syntax.
 // A brain damaged MSIE compatible syntax is generated
 // when the optional argument `useragent` contains string `MSIE` or `Microsoft`.
-func (url *Url) GetString(useragent string) string
+func (url *Url) GetStringWithUseragent(useragent string) string
 
-// TODO: Deprecate, or integrate. I don't care.
-func (url *Url) GetStringWithErr(nothrow bool) string
+// TODO: Could we integrate this with GetString above?
+// TODO: Remove the url.validUrl and add validation into url.init
+func (url *Url) GetStringWithErr(nothrow bool) string {
+	url.mtx.Lock()
+	defer url.mtx.Unlock()
+	if !url.validUrl {
+		url.init()
+	}
+	return url.url
+}
 
 // Return whether this URL is an existing file, directory, or device.
-func (url *Url) IsLocalPath() bool
+func (url *Url) IsLocalPath() bool {
+	panic("unimplemented")
+}
 
 // Return whether this URL is an existing file
-func (url *Url) IsFile() bool
+func (url *Url) IsFile() bool {
+	panic("unimplemented")
+}
 
 // Return whether this URL is an existing directory
-func (url *Url) IsDir() bool
+func (url *Url) IsDir() bool {
+	panic("unimplemented")
+}
 
 // Follows symbolic links
-func (url *Url) FollowSymlinks() *Url
+func (url *Url) FollowSymlinks() *Url {
+	panic("unimplemented")
+}
 
 // Creates the specified directory
 //
 // TODO: Returns what?
-func (url *Url) Mkdir() int
+func (url *Url) Mkdir() int {
+	panic("unimplemented")
+}
 
 // Deletes file or directory.
 // Directories are not deleted unless the directory is empty.
@@ -187,17 +278,25 @@ func (url *Url) Mkdir() int
 //
 // TODO: Create a "service" which does operating system manipulation
 // instead of turning them as methods for URL
-func (url *Url) DeleteFile() int
+func (url *Url) DeleteFile() int {
+	panic("unimplemented")
+}
 
 // Recursively erases contents of directory.
 // The directory itself will not be removed.
-func (url *Url) ClearDir(timeout int) int
+func (url *Url) ClearDir(timeout int) int {
+	panic("unimplemented")
+}
 
 // Rename a file or directory
-func (url *Url) RenameTo(newUrl *Url) int
+func (url *Url) RenameTo(newUrl *Url) int {
+	panic("unimplemented")
+}
 
 // List the contents of a directory
-func (url *Url) ListDir() []*Url
+func (url *Url) ListDir() []*Url {
+	panic("unimplemented")
+}
 
 // Returns a filename for a URL.
 // Argument must be a legal file URL.
@@ -218,16 +317,119 @@ func (url *Url) ListDir() []*Url
 // which are accepted because various browsers recognize them.
 //
 // TODO: Can we use os for this?
-func (url *Url) Filename() (string, error)
+func (url *Url) Filename() (string, error) {
+	panic("unimplemented")
+}
 
 // Hashing function
-func (url *Url) Hash() uint32
+func (url *Url) Hash() uint32 {
+	panic("unimplemented")
+}
+
+func (url *Url) init() error {
+	url.validUrl = true
+	if url.url == "" {
+		return nil
+	}
+
+	protocol := protocol(url.url)
+	if len(protocol) < 2 {
+		return errors.New("GURL.no_protocol " + url.url)
+	}
+
+	// For the `localhost` protocol
+	if strings.HasPrefix(url.url, localhost) {
+		// Take the arguments first
+		argsStr := strings.TrimLeftFunc(url.url, func(r rune) bool { return !isArgumentInit(r) })
+		url.url = url.url[0 : len(url.url)-len(argsStr)] // Before the start of the arguments
+
+		// Do things here...
+
+		// Append the arguments back
+		url.url += argsStr
+	}
+
+	panic("unimplemented") // TODO
+}
+
+func (url *Url) convertSlashes() {
+	if runtime.GOOS == "windows" {
+		xurl := url.GetStringWithErr(false)
+		protocol := protocol(xurl)
+		remaining := xurl[len(protocol):]
+		remaining = strings.ReplaceAll(remaining, "/", "\\")
+		url.url = protocol + remaining
+	}
+}
+
+func (url *Url) beautifyPath() {
+	panic("unimplemented")
+}
+
+func (url *Url) parseCgiArgs() {
+	panic("unimplemented")
+}
+
+func (url *Url) storeCgiArgs() {
+	panic("unimplemented")
+}
 
 // Escape special characters
-func encodeReserved(gs string) string
+func encodeReserved(gs string) string {
+	panic("unimplemented")
+}
 
 // Decodes reserved characters from the URL
-func decodeReserved(url string) string
+func decodeReserved(urlString string) string {
+	panic("unimplemented")
+}
+
+func beautifyPath(urlString string) string {
+	panic("unimplemented")
+}
+
+// Returns the full path name of filename interpreted relative to fromDir.
+// Use current working dir when fromDir is empty.
+func expandName(filename string, fromDir string) string {
+	panic("unimplemented")
+}
+
+// protocol extracts the protocol part of the url string.
+// Example: `protocol("https://www.google.com")` returns the string `https`.
+// If a protocol cannot be found, return an empty string.
+func protocol(urlString string) string {
+	remaining := strings.TrimLeft(urlString, alphanum+"+-.")
+	if len(remaining) >= 3 && remaining[:3] == "://" {
+		protocolLength := len(urlString) - len(remaining)
+		return urlString[:protocolLength]
+	}
+	return ""
+}
+
+// Returns whether r forms the start of the arguments whether in hash or CGI
+func isArgumentInit(r rune) bool {
+	return r == '#' || r == '?'
+}
+
+// Returns whether r is an argument separator whether in hash or CGI
+func isArgumentSeparator(r rune) bool {
+	return r == '&' || r == ';'
+}
+
+// Returns the hex value of a character, -1 if it isn't a hex
+func hexVal(r rune) int {
+	if r >= '0' && r <= '9' {
+		return int(r - '0')
+	}
+	if r >= 'A' && r <= 'F' {
+		return int(r - 'A' + 10)
+	}
+	if r >= 'a' && r <= 'f' {
+		return int(r - 'a' + 10)
+	}
+
+	return -1
+}
 
 // Filename represents a File URL.
 // Idk why that should be independent but okay.
