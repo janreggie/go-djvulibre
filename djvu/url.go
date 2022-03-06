@@ -80,31 +80,60 @@ func (url *Url) SetHashArgument(arg string) {
 
 // Returns the total number of CGI arguments in the URL.
 func (url *Url) CgiArguments() int {
-	panic("unimplemented")
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	return len(url.cgiNameArr)
 }
 
 // Returs the total number of DjVu-related CGI arguments
 // (arguments following `DJVUOPTS` in the URL)
 func (url *Url) DjvuCgiArguments() int {
-	panic("unimplemented")
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	for ii, arg := range url.cgiNameArr {
+		if strings.ToUpper(arg) == djvuopts {
+			return len(url.cgiNameArr) - ii + 1
+		}
+	}
+
+	return 0
 }
 
 // Returns that part of CGI argument `num`,
-// which is before the equal sign
+// which is before the equal sign.
+// If num is more than the length, return an empty string.
 func (url *Url) CgiName(num int) string {
-	panic("unimplemented")
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	if len(url.cgiNameArr) >= num {
+		return ""
+	}
+	return url.cgiNameArr[num]
 }
 
 // Returns that part of DjVu-related CGI argument number `num`,
 // which is before the equal sign
 func (url *Url) DjvuCgiName(num int) string {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	// TODO: Interpret
 	panic("unimplemented")
 }
 
 // Returns that part of CGI argument number `num`,
 // which is after the equal sign
 func (url *Url) CgiValue(num int) string {
-	panic("unimplemented")
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	if len(url.cgiValueArr) >= num {
+		return ""
+	}
+	return url.cgiValueArr[num]
 }
 
 // Returns that part of DjVu-related CGI argument number `num`,
@@ -131,8 +160,7 @@ func (url *Url) DjvuCgiNames() []string {
 }
 
 // Returns array of all known CGI names
-// (part of CGI argument before the equal sign)
-// TODO: Documentation above may be misleading!!! Did you mean *after* equal sign?
+// (part of CGI argument after the equal sign)
 func (url *Url) CgiValues() []string {
 	url.mtx.RLock()
 	defer url.mtx.RUnlock()
@@ -150,7 +178,10 @@ func (url *Url) DjvuCgiValues() []string {
 
 // Erases everything after the first `#` or `?`
 func (url *Url) ClearAllArguments() {
-	panic("unimplemented")
+	// TODO: Make sure that this is an immutable operation.
+	// That is, try to implemente the child functions into helper fxns.
+	url.ClearHashArguments()
+	url.ClearCgiArguments()
 }
 
 // Erases everything after the first `#`
@@ -165,7 +196,12 @@ func (url *Url) ClearDjvuCgiArguments() {
 
 // Erases all CGI arguments (following the first `?`)
 func (url *Url) ClearCgiArguments() {
-	panic("unimplemented")
+	url.mtx.Lock()
+	defer url.mtx.Unlock()
+
+	// Clear everything past the '?' sign in the url
+	split := strings.SplitN(url.url, "?", 2)
+	url.url = split[0]
 }
 
 // Appends the specified CGI argument.
@@ -179,16 +215,22 @@ func (url *Url) AddDjvuCgiArgument(name string, value *string) {
 // containing the document with this URL.
 // The function basically takes the URL
 // and clears everything after the last slash.
-func (url *Url) Base() *Url
+func (url *Url) Base() *Url {
+	panic("unimplemented")
+}
 
 // Returns the absolute URL without the host part.
-func (url *Url) Pathname() string
+func (url *Url) Pathname() string {
+	panic("unimplemented")
+}
 
 // Returns the name part of this URL.
 // For example, if the URL is `http://www.lizardtech.com/file%201.djvu`,
 // then this function will return `file%201.djvu`.
 // Contrast with Fname which returns `file 1.djvu`.
-func (url *Url) Name() string
+func (url *Url) Name() string {
+	panic("unimplemented")
+}
 
 // Returns the name part of this URL with escape sequences expanded.
 // For example, if the URL is `http://www.lizardtech.com/file%201.djvu`,
@@ -211,10 +253,17 @@ func (url *Url) IsEmpty() bool {
 }
 
 // Checks whether the URL is local (i.e., starts with `file:/`)
-func (url *Url) IsLocalFileUrl() bool
+func (url *Url) IsLocalFileUrl() bool {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+
+	return protocol(url.url) == "file" && url.url[5] == slash
+}
 
 // Checks whether two URLs are the same
-func (url *Url) Equal(rhs *Url) bool
+func (url *Url) Equal(rhs *Url) bool {
+	panic("unimplemented")
+}
 
 // Returns internal URL representation.
 func (url *Url) Raw() string {
@@ -423,11 +472,37 @@ func (url *Url) beautifyPath() {
 }
 
 func (url *Url) parseCgiArgs() {
+	url.cgiNameArr = make([]string, 0)
+	url.cgiValueArr = make([]string, 0)
+	split := strings.SplitN(url.url, "?", 2)
+	if len(split) == 1 {
+		return // No arguments to be found
+	}
+	args := split[1]
+
+	// TODO: Interpret
+	_ = args
 	panic("unimplemented")
 }
 
 func (url *Url) storeCgiArgs() {
-	panic("unimplemented")
+	var sb strings.Builder
+	sb.WriteString(url.url)
+
+	for ii := range url.cgiNameArr {
+		name, value := encodeReserved(url.cgiNameArr[ii]), encodeReserved(url.cgiValueArr[ii])
+		if ii == 0 {
+			sb.WriteRune('?')
+		} else {
+			sb.WriteRune('&')
+		}
+		sb.WriteString(name)
+		if len(value) > 0 {
+			sb.WriteRune('=')
+			sb.WriteString(value)
+		}
+	}
+	url.url = sb.String()
 }
 
 // Escape special characters
