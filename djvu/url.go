@@ -46,9 +46,14 @@ type Url struct {
 	validUrl bool
 }
 
-func NewUrl(urlString string) *Url {
-	// TODO: Implement
-	return nil
+func NewUrl(urlStr string) (*Url, error) {
+	url := &Url{}
+	url.url = urlStr
+	err := url.init()
+	if err != nil {
+		return nil, err
+	}
+	return url, nil
 }
 
 // Copy copies a Url
@@ -64,7 +69,9 @@ func (url *Url) IsValid() bool {
 
 // Extracts the Protocol part from the URL and returns it
 func (url *Url) Protocol() string {
-	panic("unimplemented")
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+	return protocol(url.url)
 }
 
 // Returns string after the first `#`
@@ -221,6 +228,14 @@ func (url *Url) Base() *Url {
 
 // Returns the absolute URL without the host part.
 func (url *Url) Pathname() string {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+	if url.IsLocalFileUrl() {
+		return encodeReserved(url.utf8Filename())
+	}
+	urlStr := url.url
+	protoLen := len(protocol(urlStr))
+	return urlStr[pathnameStart(urlStr, protoLen):]
 	panic("unimplemented")
 }
 
@@ -337,17 +352,6 @@ func (url *Url) utf8Filename() string {
 // when the optional argument `useragent` contains string `MSIE` or `Microsoft`.
 func (url *Url) GetStringWithUseragent(useragent string) string
 
-// TODO: Could we integrate this with GetString above?
-// TODO: Remove the url.validUrl and add validation into url.init
-func (url *Url) GetStringWithErr(nothrow bool) string {
-	url.mtx.Lock()
-	defer url.mtx.Unlock()
-	if !url.validUrl {
-		url.init()
-	}
-	return url.url
-}
-
 // Return whether this URL is an existing file, directory, or device.
 func (url *Url) IsLocalPath() bool {
 	panic("unimplemented")
@@ -423,12 +427,40 @@ func (url *Url) ListDir() []*Url {
 //
 // TODO: Can we use os for this?
 func (url *Url) Filename() (string, error) {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+	if len(url.url) == 0 {
+		return "", nil
+	}
+
+	urlCopy := decodeReserved(url.url)
+	if !strings.HasPrefix(urlCopy, filespec) {
+		return path.Base(urlCopy), nil
+	}
+	urlCopy = strings.TrimPrefix(urlCopy, filespec)
+
+	if runtime.GOOS == osMac {
+		// TODO: Needful
+	}
+	// Do more things here...
 	panic("unimplemented")
 }
 
 // Hashing function
 func (url *Url) Hash() uint32 {
-	panic("unimplemented")
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+	// Don't include the trailing slash: TrimSufix, *not* TrimRight!
+	return hash(strings.TrimSuffix(url.url, "/"))
+}
+
+func hash(s string) uint32 {
+	x := uint32(0)
+	for ii := range s {
+		b := s[ii]
+		x = x ^ (x << 6) ^ uint32(b)
+	}
+	return x
 }
 
 func (url *Url) init() error {
@@ -459,7 +491,7 @@ func (url *Url) init() error {
 
 func (url *Url) convertSlashes() {
 	if runtime.GOOS == "windows" {
-		xurl := url.GetStringWithErr(false)
+		xurl := url.url
 		protocol := protocol(xurl)
 		remaining := xurl[len(protocol):]
 		remaining = strings.ReplaceAll(remaining, "/", "\\")
@@ -512,9 +544,9 @@ func encodeReserved(gs string) string {
 }
 
 // Decodes reserved characters from the URL
-func decodeReserved(urlString string) string {
+func decodeReserved(urlStr string) string {
 	// TODO: For now this should work, but you'd be better off basing code from decode_reserved
-	result, err := url.PathUnescape(urlString)
+	result, err := url.PathUnescape(urlStr)
 	if err != nil {
 		// TODO: Return err instead of panicking
 		panic(err)
@@ -522,24 +554,67 @@ func decodeReserved(urlString string) string {
 	return result
 }
 
-func beautifyPath(urlString string) string {
+func beautifyPath(urlStr string) string {
 	panic("unimplemented")
+}
+
+func pathnameStart(urlStr string, protolength int) int {
+	urlLength := len(urlStr)
+	retval := 0
+	if protolength+1 < urlLength {
+		if urlStr[protolength+1] == slash {
+			if urlStr[protolength+2] == slash {
+				retval = search(urlStr, slash, protolength+3)
+			} else {
+				retval = search(urlStr, slash, protolength+2)
+			}
+		} else {
+			retval = search(urlStr, slash, protolength+1)
+		}
+	}
+	if retval > 0 {
+		return retval
+	}
+	return urlLength
+}
+
+// For pathnameStart.
+// Said function should be implemented better
+func search(s string, c byte, startAt int) int {
+	for ii := startAt; ii < len(s); ii++ {
+		if s[ii] == c {
+			return ii
+		}
+	}
+	return -1
 }
 
 // Returns the full path name of filename interpreted relative to fromDir.
 // Use current working dir when fromDir is empty.
 func expandName(filename string, fromDir string) string {
+
+	// Do things here
+
+	// The IF function
+	switch runtime.GOOS {
+	case osMac, osLinux:
+		// TODO: UNIX impl
+	case osWindows:
+		// TODO: Windows impl
+	default:
+		panic(unsupportedSystem)
+	}
 	panic("unimplemented")
 }
 
 // protocol extracts the protocol part of the url string.
 // Example: `protocol("https://www.google.com")` returns the string `https`.
 // If a protocol cannot be found, return an empty string.
-func protocol(urlString string) string {
-	remaining := strings.TrimLeft(urlString, alphanum+"+-.")
+func protocol(urlStr string) string {
+	remaining := strings.TrimLeft(urlStr, alphanum+"+-.")
 	if len(remaining) >= 3 && remaining[:3] == "://" {
-		protocolLength := len(urlString) - len(remaining)
-		return urlString[:protocolLength]
+		protocolLength := len(urlStr) - len(remaining)
+		return urlStr[:protocolLength]
 	}
 	return ""
 }
