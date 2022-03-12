@@ -39,7 +39,9 @@ import "sync"
 type PortCaster struct {
 	mtx      sync.Mutex
 	routeMap map[Port][]Port
-	contMap  map[Port]struct{}
+
+	// TODO: Do we even need this though?
+	contMap map[Port]struct{}
 
 	// Map of aliases to their respective ports
 	a2pMap map[string]Port
