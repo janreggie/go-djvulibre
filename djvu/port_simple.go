@@ -37,12 +37,12 @@ func (*SimplePort) NotifyDecodeProgress(source Port, done float64) {
 }
 
 // NotifyDocFlagsChanged implements Port
-func (*SimplePort) NotifyDocFlagsChanged(source *Document, setMask int64, clearMask int64) {
+func (*SimplePort) NotifyDocFlagsChanged(source *Document, setMask uint64, clearMask uint64) {
 	panic("unimplemented")
 }
 
 // NotifyFileFlagsChanged implements Port
-func (*SimplePort) NotifyFileFlagsChanged(source *File, setMask int64, clearMask int64) {
+func (*SimplePort) NotifyFileFlagsChanged(source *File, setMask uint64, clearMask uint64) {
 	panic("unimplemented")
 }
 

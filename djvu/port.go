@@ -66,12 +66,12 @@ type Port interface {
 	// - Decoding succeeded, failed or just stopped
 	// - All data has been received
 	// - All included files have been created
-	NotifyFileFlagsChanged(source *File, setMask int64, clearMask int64)
+	NotifyFileFlagsChanged(source *File, setMask uint64, clearMask uint64)
 
 	// This notification is sent after the File flags have been changed.
 	// This happens, for example, after it receives enough data
 	// and can determine its structure (BUNDLED, OLD_INDEXED, etc.)
-	NotifyDocFlagsChanged(source *Document, setMask int64, clearMask int64)
+	NotifyDocFlagsChanged(source *Document, setMask uint64, clearMask uint64)
 
 	// This notification is sent from time to time while decoding is in progress.
 	// The purpose is obvious:
@@ -86,7 +86,7 @@ type Port interface {
 // but it needs to be defined here to guarantee all subclasses use the same enum types.
 // In general, many errors are non recoverable.
 // Using a setting other than ABORT may just result in even more errors.
-type ErrorRecoveryAction int64
+type ErrorRecoveryAction uint64
 
 const (
 	ABORT ErrorRecoveryAction = iota

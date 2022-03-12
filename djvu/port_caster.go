@@ -177,12 +177,12 @@ func (c *PortCaster) NotifyChunkDone(source *Image, name string)
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest.
-func (c *PortCaster) NotifyFileFlagsChanged(source *File, setMask int64, clearMask int64)
+func (c *PortCaster) NotifyFileFlagsChanged(source *File, setMask uint64, clearMask uint64)
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest.
-func (c *PortCaster) NotifyDocFlagsChanged(source *Document, setMask int64, clearMask int64)
+func (c *PortCaster) NotifyDocFlagsChanged(source *Document, setMask uint64, clearMask uint64)
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
