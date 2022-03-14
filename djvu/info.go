@@ -6,6 +6,7 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/janreggie/go-djvulibre/djvu/bytestream"
 	"github.com/pkg/errors"
 )
 
@@ -43,7 +44,7 @@ func NewInfo() *Info { return &Info{} }
 // Decode decodes the a DjVu's `INFO` chunk.
 // This function reads binary data from a Reader stream
 // and returns the DjVu file, and an error if it exists.
-func (i *Info) Decode(r Reader) error {
+func (i *Info) Decode(r bytestream.Reader) error {
 	// Set to default values
 	i.Width = 0
 	i.Height = 0
@@ -111,7 +112,7 @@ func (i *Info) Decode(r Reader) error {
 // Encode encodes the `INFO` chunk.
 // This function writes the fields of this Info object
 // into a Wrtiter.
-func (i *Info) Encode(w Writer) error {
+func (i *Info) Encode(w bytestream.Writer) error {
 	var flags uint8
 	switch i.Orientation {
 	case ORIENTATION_90:

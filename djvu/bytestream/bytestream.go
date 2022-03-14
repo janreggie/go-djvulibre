@@ -1,6 +1,9 @@
-package djvu
+package bytestream
 
 import "io"
+
+// Idk what to make of you so for now...
+type ByteStream interface{}
 
 // Reader is an interface which reads from a stream.
 type Reader interface{ io.Reader }

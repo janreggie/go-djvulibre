@@ -1,0 +1,8 @@
+package iw44
+
+const (
+	IWALLOCSIZE   = 4080
+	IWCODEC_MAJOR = 1
+	IWCODEC_MINOR = 2
+	DECIBEL_PRUNE = 5.0
+)
