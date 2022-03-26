@@ -33,9 +33,9 @@ type Bitmap struct {
 	border      uint16
 	bytesPerRow uint16
 	grays       uint16
-	bytes       []byte // TODO: Make this Go-like
+	bytes       []byte // TODO: Can we do a 2x2 slice?
 	rle         []byte
-	rlerows     [][]byte
+	rlerows     [][]byte // TODO: Combine with rle?
 	rlelength   uint32
 	mtx         sync.RWMutex
 	zerobuffer  *zerobuffer
