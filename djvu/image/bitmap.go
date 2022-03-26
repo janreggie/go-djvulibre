@@ -3,7 +3,6 @@ package image
 import (
 	"sync"
 
-	"github.com/janreggie/go-djvulibre/djvu/bytestream"
 	"github.com/pkg/errors"
 )
 
@@ -29,16 +28,15 @@ import (
 // You should never write anything into border pixels
 // because they are shared between images and between lines.
 type Bitmap struct {
-	nrows       uint8
-	ncols       uint8
-	border      uint8
-	bytesPerRow uint8
-	grays       uint8
+	nrows       uint16
+	ncols       uint16
+	border      uint16
+	bytesPerRow uint16
+	grays       uint16
 	bytes       []byte // TODO: Make this Go-like
-	bytesData   []byte // TODO: Make this Go-like
 	rle         []byte
 	rlerows     [][]byte
-	rlelength   uint16
+	rlelength   uint32
 	mtx         sync.RWMutex
 	zerobuffer  *zerobuffer
 }
@@ -54,21 +52,13 @@ func NewEmptyBitmap() *Bitmap {
 // `border` specifies the size of an optional border of white pixels
 // surrounding the image.
 // The number of gray levels is initially set to 2.
-func NewBitmap(nrows uint8, ncols uint8, border uint8) (*Bitmap, error) {
+func NewBitmap(nrows uint16, ncols uint16, border uint16) (*Bitmap, error) {
 	b := NewEmptyBitmap()
 	err := b.Init(nrows, ncols, border)
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not create an image with rows %v, cols %v, border size %v", nrows, ncols, border)
 	}
 	return b, nil
-}
-
-// NewBitmapFromStream creates a Bitmap
-// by reading PBM, PGM or RLE data from a ByteStream.
-// `border` specifies the size of an optional border of white pixels
-// surrounding the image.
-func NewBitmapFromStream(bs bytestream.ByteStream) (*Bitmap, error) {
-	panic("unimplemented")
 }
 
 // Copy copies an existing Bitmmap and returns said copy
@@ -93,7 +83,7 @@ func (b *Bitmap) CopySection(r Rect, border uint8) {
 // `border` specifies the size of an optional border of white pixels
 // surrounding the image.
 // THe number of gray levels is initially set to 2.
-func (b *Bitmap) Init(nrows uint8, ncols uint8, border uint8) error {
+func (b *Bitmap) Init(nrows uint16, ncols uint16, border uint16) error {
 	// Some checking to make sure nothing overflows
 	nr, nc, br := uint32(nrows), uint32(ncols), uint32(border)
 	np := nr*(nc+br) + br
@@ -112,17 +102,15 @@ func (b *Bitmap) Init(nrows uint8, ncols uint8, border uint8) error {
 	b.bytesPerRow = ncols + border
 	b.zerobuffer = zeroes(uint32(b.bytesPerRow) + br)
 
-	npixels := uint32(nrows)*uint32(b.bytesPerRow) + uint32(border)
-	if npixels > 0 {
-		b.bytesData = make([]byte, npixels)
-		b.bytes = b.bytesData
+	if np > 0 {
+		b.bytes = make([]byte, np)
 	}
 
 	return nil
 }
 
 // Fill initializes all Bitmap pixels to some `value`
-func (b *Bitmap) Fill(value uint8) {
+func (b *Bitmap) Fill(value byte) {
 	panic("unimplemented")
 }
 
@@ -142,7 +130,6 @@ func (b *Bitmap) Cols() uint32 {
 
 // destroy "resets" everything
 func (b *Bitmap) destroy() {
-	b.bytesData = make([]byte, 0)
 	b.bytes = make([]byte, 0)
 	b.rle = make([]byte, 0)
 	b.rlerows = make([][]byte, 0)
