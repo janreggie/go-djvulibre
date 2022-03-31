@@ -44,7 +44,7 @@ func NewInfo() *Info { return &Info{} }
 // Decode decodes the a DjVu's `INFO` chunk.
 // This function reads binary data from a Reader stream
 // and returns the DjVu file, and an error if it exists.
-func (i *Info) Decode(r bytestream.Reader) error {
+func (i *Info) Decode(r io.Reader) error {
 	// Set to default values
 	i.Width = 0
 	i.Height = 0
@@ -53,13 +53,13 @@ func (i *Info) Decode(r bytestream.Reader) error {
 	i.Gamma = 2.2
 	i.Orientation = ORIENTATION_0
 
-	buffer, err := io.ReadAll(r)
-	size := len(buffer)
+	buffer := make([]byte, 10)
+	size, err := io.ReadAtLeast(r, buffer, 10)
 	if err != nil {
 		return errors.Wrapf(err, "could not read INFO chunk")
 	}
 	if size == 0 {
-		return io.EOF
+		return io.ErrUnexpectedEOF
 	}
 	if size < 5 {
 		return errors.New("corrupt file from INFO chunk")
