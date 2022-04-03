@@ -10,6 +10,7 @@ import (
 func readInteger(r io.Reader) (uint32, error) {
 	var result uint32
 	br := newBytereader(r)
+	br.B = '\n' // some lookahead character that will be overridden anyways
 
 	// Eat blank before integer
 	for br.B == ' ' || br.B == '\t' || br.B == '\r' || br.B == '\n' || br.B == '#' {

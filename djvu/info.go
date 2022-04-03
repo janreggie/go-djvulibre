@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/janreggie/go-djvulibre/djvu/bytestream"
+	"github.com/janreggie/go-djvulibre/djvu/internal/bytestream"
 	"github.com/pkg/errors"
 )
 
@@ -112,7 +112,8 @@ func (i *Info) Decode(r io.Reader) error {
 // Encode encodes the `INFO` chunk.
 // This function writes the fields of this Info object
 // into a Wrtiter.
-func (i *Info) Encode(w bytestream.Writer) error {
+func (i *Info) Encode(w io.Writer) error {
+	wr := bytestream.NewWriter(w)
 	var flags uint8
 	switch i.Orientation {
 	case ORIENTATION_90:
@@ -125,7 +126,7 @@ func (i *Info) Encode(w bytestream.Writer) error {
 		flags = uint8(ORIENTATION_0)
 	}
 
-	return w.Write16(i.Width).
+	return wr.Write16(i.Width).
 		Write16(i.Height).
 		Write8(uint8(i.FileVersion & 0xff)).
 		Write8(uint8(i.FileVersion >> 8)).

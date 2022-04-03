@@ -1,7 +1,9 @@
 package iw44
 
 import (
-	"github.com/janreggie/go-djvulibre/djvu/bytestream"
+	"io"
+
+	"github.com/janreggie/go-djvulibre/djvu/iff"
 	"github.com/janreggie/go-djvulibre/djvu/image"
 )
 
@@ -57,22 +59,22 @@ func (image_impl) GetPercentMemory() uint64 {
 }
 
 // EncodeChunk implements Image
-func (image_impl) EncodeChunk(bs bytestream.ByteStream) int {
+func (image_impl) EncodeChunk(w io.Writer) int {
 	panic("unimplemented")
 }
 
 // EncodeIFF implements Image
-func (image_impl) EncodeIFF(iff *bytestream.IFF, chunks uint16, params *EncoderParams) {
+func (image_impl) EncodeIFF(iff *iff.IFF, chunks uint16, params *EncoderParams) {
 	panic("unimplemented")
 }
 
 // DecodeChunk implements Image
-func (image_impl) DecodeChunk(bs bytestream.ByteStream) int {
+func (image_impl) DecodeChunk(r io.Reader) int {
 	panic("unimplemented")
 }
 
 // DecodeIff implements Image
-func (image_impl) DecodeIff(iff *bytestream.IFF, maxChunks uint16) {
+func (image_impl) DecodeIff(iff *iff.IFF, maxChunks uint16) {
 	panic("unimplemented")
 }
 

@@ -1,7 +1,9 @@
 package iw44
 
 import (
-	"github.com/janreggie/go-djvulibre/djvu/bytestream"
+	"io"
+
+	"github.com/janreggie/go-djvulibre/djvu/iff"
 	"github.com/janreggie/go-djvulibre/djvu/image"
 )
 
@@ -69,7 +71,7 @@ type Image interface {
 	// Successive calls to EncodeChunk encode successive chunks.
 	//
 	// You must call CloseCodec after encoding the last chunk of a file.
-	EncodeChunk(bs bytestream.ByteStream) int
+	EncodeChunk(w io.Writer) int
 
 	// Writes a gray level image into DjVu IW44 file.
 	// This function creates a composite chunk
@@ -78,20 +80,20 @@ type Image interface {
 	// (identifier `BM44` or `PM44`).
 	// Data for each chunk is generated with EncodeChunk
 	// using the corresponding parameters.
-	EncodeIFF(iff *bytestream.IFF, chunks uint16, params *EncoderParams)
+	EncodeIFF(iff *iff.IFF, chunks uint16, params *EncoderParams)
 
 	// Decodes one data chunk from a ByteStream.
 	// Successive calls to DecodeChunk decode successive chunks.
 	//
 	// You must call CloseCodec after decoding the last chunk of a file.
-	DecodeChunk(bs bytestream.ByteStream) int
+	DecodeChunk(r io.Reader) int
 
 	// This function enters a composite chunk
 	// (identifier `FORM:BM44`, or `FORM:PM44`),
 	// and decodes a maximum of `maxChunks` data chunks
 	// (identifier `BM44#`).
 	// Data for each chunk is processed using the function DecodeChunk.
-	DecodeIff(iff *bytestream.IFF, maxChunks uint16)
+	DecodeIff(iff *iff.IFF, maxChunks uint16)
 
 	/////////////////////
 	//  Miscellaneous  //

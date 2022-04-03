@@ -4,6 +4,7 @@ import (
 	"io"
 	"math"
 
+	"github.com/janreggie/go-djvulibre/djvu/internal/bytestream"
 	"github.com/pkg/errors"
 )
 
@@ -16,15 +17,16 @@ func NewBitmapFromStream(r io.Reader, border uint16) (*Bitmap, error) {
 	if _, err := io.ReadAtLeast(r, magic, 2); err != nil {
 		return nil, errors.Wrapf(err, "could not read magic number")
 	}
+	br := bytestream.NewReader(r)
 
-	acols, err := readInteger(r)
+	acols, err := br.ReadInteger()
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not read number of columns")
 	}
 	if acols > math.MaxUint16 {
 		return nil, errors.Wrapf(err, "too many columns in image")
 	}
-	arows, err := readInteger(r)
+	arows, err := br.ReadInteger()
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not read number of rows")
 	}
@@ -47,7 +49,7 @@ func NewBitmapFromStream(r io.Reader, border uint16) (*Bitmap, error) {
 			return bitmap, nil
 
 		case '2':
-			maxval, err := readInteger(r)
+			maxval, err := br.ReadInteger()
 			if err != nil {
 				return nil, errors.Wrapf(err, "could not read maxval for PGM text")
 			}
@@ -72,7 +74,7 @@ func NewBitmapFromStream(r io.Reader, border uint16) (*Bitmap, error) {
 			return bitmap, nil
 
 		case '5':
-			maxval, err := readInteger(r)
+			maxval, err := br.ReadInteger()
 			if err != nil {
 				return nil, errors.Wrapf(err, "could not read maxval for PGM raw")
 			}
@@ -105,17 +107,17 @@ func NewBitmapFromStream(r io.Reader, border uint16) (*Bitmap, error) {
 }
 
 func (b *Bitmap) readPbmText(r io.Reader) error {
-	br := newBytereader(r)
+	br := bytestream.NewByteReader(r)
 
 	for rr := b.nrows - 1; rr <= b.nrows-1; rr-- {
 		row := rr*b.bytesPerRow + b.border
 
 		for cc := uint16(0); cc < b.ncols; cc++ {
-			if br.advance(); br.E != nil {
+			if br.Advance(); br.E != nil {
 				return br.E
 			}
 			for br.B == ' ' || br.B == '\t' || br.B == '\r' || br.B == '\n' {
-				if br.advance(); br.E != nil {
+				if br.Advance(); br.E != nil {
 					return br.E
 				}
 			}
@@ -140,11 +142,13 @@ func (b *Bitmap) readPgmText(r io.Reader, maxval uint32) error {
 		ramp[ii] = byte((uint32(b.grays-1)*(maxval-ii) + maxval/2) / maxval)
 	}
 
+	br := bytestream.NewReader(r)
+
 	for rr := b.nrows - 1; rr <= b.nrows-1; rr-- {
 		row := rr*b.bytesPerRow + b.border
 
 		for cc := uint16(0); cc < b.ncols; cc++ {
-			ind, err := readInteger(r)
+			ind, err := br.ReadInteger()
 			if err != nil {
 				return err
 			}
