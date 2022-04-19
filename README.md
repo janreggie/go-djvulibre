@@ -36,7 +36,7 @@ which is one of the objectives of this port.
 | `DjVuDocument.cpp` | 0 | `document.go` | fields+methods unimplemented |
 | `DjVuDumpHelper.cpp` | 0 | unimplemented |
 | `DjVuErrorList.cpp` | 0 | unimplemented |
-| `DjVuFile.cpp` | 0 | `file.h` | everything unimplemented |
+| `DjVuFile.cpp` | 0 | `file.go` | everything unimplemented |
 | `DjVuFileCache.cpp` | 0 | unimplemented |
 | `DjVuGlobal.cpp` | 0 | unimplemented |
 | `DjVuGlobalMemory.cpp` | 0 | unimplemented |
