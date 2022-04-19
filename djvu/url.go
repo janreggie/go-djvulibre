@@ -244,6 +244,17 @@ func (url *Url) Pathname() string {
 // then this function will return `file%201.djvu`.
 // Contrast with Fname which returns `file 1.djvu`.
 func (url *Url) Name() string {
+	url.mtx.RLock()
+	defer url.mtx.RUnlock()
+	if url.isEmpty() {
+		return ""
+	}
+
+	xurl := url.url
+	protocolLength := len(protocol(xurl))
+	_ = protocolLength
+	// TODO: How do we do this?
+
 	panic("unimplemented")
 }
 
@@ -264,8 +275,11 @@ func (url *Url) Extension() string {
 func (url *Url) IsEmpty() bool {
 	url.mtx.RLock()
 	defer url.mtx.RUnlock()
-	return len(url.url) == 0
+	return url.isEmpty()
 }
+
+// Unsafe isEmpty. Only use when it's guaranteed that the URL is read-locked.
+func (url *Url) isEmpty() bool { return len(url.url) == 0 }
 
 // Checks whether the URL is local (i.e., starts with `file:/`)
 func (url *Url) IsLocalFileUrl() bool {
@@ -350,7 +364,9 @@ func (url *Url) utf8Filename() string {
 // Some versions of MSIE do not support this standard syntax.
 // A brain damaged MSIE compatible syntax is generated
 // when the optional argument `useragent` contains string `MSIE` or `Microsoft`.
-func (url *Url) GetStringWithUseragent(useragent string) string
+func (url *Url) GetStringWithUseragent(useragent string) string {
+	panic("unimplemented")
+}
 
 // Return whether this URL is an existing file, directory, or device.
 func (url *Url) IsLocalPath() bool {

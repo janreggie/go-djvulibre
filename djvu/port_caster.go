@@ -74,22 +74,29 @@ func (c *PortCaster) DelPort(p Port) {
 // it will be forwarded to `dest` as well.
 func (c *PortCaster) AddRoute(source Port, dest Port) {
 	// Do things here...
+	panic("unimplemented")
 }
 
 // The opposite of `AddRoute`.
 // Removes the association between `source` and `dest`.
-func (c *PortCaster) DelRoute(source Port, dest Port)
+func (c *PortCaster) DelRoute(source Port, dest Port) {
+	panic("unimplemented")
+}
 
 // Copies all incoming and outgoing routes from `source` to `dest`.
 // This function should be called when a Port is copied,
 // if you want to preserve the connectivity.
-func (c *PortCaster) CopyRoutes(dest Port, source Port)
+func (c *PortCaster) CopyRoutes(dest Port, source Port) {
+	panic("unimplemented")
+}
 
 // Returns a smart pointer to the port if `p` is a valid pointer to an existing Port.
 // Returns a null pointer otherwise.
 //
 // TODO: How do you translate this in a garbage-collected language like Go?
-func (c *PortCaster) IsPortAlive(p Port) Port
+func (c *PortCaster) IsPortAlive(p Port) Port {
+	panic("unimplemented")
+}
 
 // Assigns one more {\em alias} for the specified \Ref{DjVuPort}.
 // {\em Aliases} are names, which can be used later to retrieve this
@@ -98,7 +105,9 @@ func (c *PortCaster) IsPortAlive(p Port) Port
 // to only one \Ref{DjVuPort}. Thus, if the specified alias is
 // already associated with another port, this association will be
 // removed.
-func (c *PortCaster) AddAlias(p Port, alias string)
+func (c *PortCaster) AddAlias(p Port, alias string) {
+	panic("unimplemented")
+}
 
 // Removes all the aliases
 func (c *PortCaster) ClearAllAliases() {
@@ -127,21 +136,29 @@ func (c *PortCaster) clearAliases(p Port) {
 // If nothing is known about name alias,
 // or the port associated with it has already been destroyed,
 // a nil pointer will be returned.
-func (c *PortCaster) AliasToPort(alias string) Port
+func (c *PortCaster) AliasToPort(alias string) Port {
+	panic("unimplemented")
+}
 
 // Returns a list of Ports with aliases starting with `prefix`.
 // If no Ports have been found, an empty list is returned.
-func (c *PortCaster) PrefixToPorts(alias string) []Port
+func (c *PortCaster) PrefixToPorts(alias string) []Port {
+	panic("unimplemented")
+}
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest until one of them returns non-empty URL.
-func (c *PortCaster) IdToUrl(source Port, id string) Url
+func (c *PortCaster) IdToUrl(source Port, id string) Url {
+	panic("unimplemented")
+}
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest until one of them returns non-zero pointer to a File.
-func (c *PortCaster) IdToFile(source Port, id string) *File
+func (c *PortCaster) IdToFile(source Port, id string) *File {
+	panic("unimplemented")
+}
 
 // This request is issued when decoder needs additional data for decoding.
 // Both File and Document are initialized with a URL, not the document data.
@@ -149,42 +166,60 @@ func (c *PortCaster) IdToFile(source Port, id string) *File
 // whose responsibility is to locate the source of the data based on the URL passed
 // and return it back in the form of the Pool.
 // If this particular receiver is unable to fullfil the request, it should return nil.
-func (c *PortCaster) RequestData(source Port, url *Url) *sync.Pool
+func (c *PortCaster) RequestData(source Port, url *Url) *sync.Pool {
+	panic("unimplemented")
+}
 
 // This notification is sent when an error occurs
 // and the error message should be shown to the user.
 // Returns whether the request is successful.
-func (c *PortCaster) NotifyError(source Port, message string) bool
+func (c *PortCaster) NotifyError(source Port, message string) bool {
+	panic("unimplemented")
+}
 
 // This notification is sent to update the decoding status.
 // Returns whether the request is successful.
-func (c *PortCaster) NotifyStatus(source Port, message string) bool
+func (c *PortCaster) NotifyStatus(source Port, message string) bool {
+	panic("unimplemented")
+}
 
 // This notification is sent by an Image when it should be redrawn.
 // It may be used to implement progressive redisplay.
-func (c *PortCaster) NotifyRedisplay(source *Image)
+func (c *PortCaster) NotifyRedisplay(source *Image) {
+	panic("unimplemented")
+}
 
 // This notification is sent by Image
 // when its geometry has been changed as a result of decoding.
 // It may be used to implement progressive redisplay.
-func (c *PortCaster) NotifyRelayout(source *Image)
+func (c *PortCaster) NotifyRelayout(source *Image) {
+	panic("unimplemented")
+}
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest.
-func (c *PortCaster) NotifyChunkDone(source *Image, name string)
+func (c *PortCaster) NotifyChunkDone(source *Image, name string) {
+	panic("unimplemented")
+}
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest.
-func (c *PortCaster) NotifyFileFlagsChanged(source *File, setMask uint64, clearMask uint64)
+func (c *PortCaster) NotifyFileFlagsChanged(source *File, setMask uint64, clearMask uint64) {
+	panic("unimplemented")
+}
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest.
-func (c *PortCaster) NotifyDocFlagsChanged(source *Document, setMask uint64, clearMask uint64)
+func (c *PortCaster) NotifyDocFlagsChanged(source *Document, setMask uint64, clearMask uint64) {
+	panic("unimplemented")
+}
 
 // Computes destination list for `source`
 // and calls the corresponding function in each of the ports from the destination list
 // starting from the closest.
-func (c *PortCaster) NotifyDecodeProgress(source *Port, done float64)
+func (c *PortCaster) NotifyDecodeProgress(source *Port, done float64) {
+	panic("unimplemented")
+}

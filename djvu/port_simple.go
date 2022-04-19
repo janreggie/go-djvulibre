@@ -57,17 +57,25 @@ func (*SimplePort) NotifyRelayout(source *Image) {
 }
 
 /// Returns 1 if #class_name# is #"DjVuPort"# or #"DjVuSimplePort"#.
-func (p *SimplePort) Inherits(className string) bool
+func (p *SimplePort) Inherits(className string) bool {
+	panic("unimplemented")
+}
 
 /** If #url# is local, it created a \Ref{DataPool}, connects it to the
   file with the given name and returns.  Otherwise returns #0#. */
-func (p *SimplePort) RequestData(source Port, url *Url) *DataPool
+func (p *SimplePort) RequestData(source Port, url *Url) *DataPool {
+	panic("unimplemented")
+}
 
 /// Displays error on #stderr#. Always returns 1.
-func (p *SimplePort) NotifyError(source Port, msg string) bool
+func (p *SimplePort) NotifyError(source Port, msg string) bool {
+	panic("unimplemented")
+}
 
 /// Displays status on #stderr#. Always returns 1.
-func (p *SimplePort) NotifyStatus(source Port, msg string) bool
+func (p *SimplePort) NotifyStatus(source Port, msg string) bool {
+	panic("unimplemented")
+}
 
 // Enforces interface in the compiler level
 var _ Port = &SimplePort{}
