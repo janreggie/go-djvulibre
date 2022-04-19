@@ -22,6 +22,10 @@ func (s *UrlTestSuite) SetupTest() {
 	s.False(s.SimpleUrl.IsEmpty())
 }
 
+func (s *UrlTestSuite) TestPathname() {
+	s.Equal(`/file%201.djvu`, s.SimpleUrl.Pathname())
+}
+
 func (s *UrlTestSuite) TestUrlName() {
 	s.Equal(`file%201.djvu`, s.SimpleUrl.Name())
 }

@@ -236,7 +236,6 @@ func (url *Url) Pathname() string {
 	urlStr := url.url
 	protoLen := len(protocol(urlStr))
 	return urlStr[pathnameStart(urlStr, protoLen):]
-	panic("unimplemented")
 }
 
 // Returns the name part of this URL.
@@ -496,7 +495,13 @@ func (url *Url) init() error {
 		argsStr := strings.TrimLeftFunc(url.url, func(r rune) bool { return !isArgumentInit(r) })
 		url.url = url.url[0 : len(url.url)-len(argsStr)] // Before the start of the arguments
 
-		// Do things here...
+		// Do double conversion
+		tmp := url.utf8Filename()
+		if len(tmp) == 0 {
+			url.validUrl = false
+			return errors.New("GURL.fail_to_file")
+		}
+		// TODO: My brain hurts...
 
 		// Append the arguments back
 		url.url += argsStr
