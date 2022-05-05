@@ -2,6 +2,8 @@
 
 An attempt on porting the [djvulibre](https://github.com/traycold/djvulibre/) library to Go.
 
+Please don't use this.
+
 Right now I'm just translating the code line-by-line.
 I *know* that the code isn't the most idiomatic.
 but for now this should work.
